@@ -1,4 +1,19 @@
-import org.apache.hadoop.*;
+package sogara.hadoop.subgraph;
+
+import java.io.IOException;
+import java.lang.InterruptedException;
+
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.hadoop.util.LineReader;
 
 public class GraphRecordReader extends RecordReader<IntWritable, IntWritable> {
     private LineReader in;
@@ -16,17 +31,17 @@ public class GraphRecordReader extends RecordReader<IntWritable, IntWritable> {
     }
  
     @Override
-    public LongWritable getCurrentKey() throws IOException,InterruptedException {
+    public IntWritable getCurrentKey() throws IOException {
         return key;
     }
  
     @Override
-    public Text getCurrentValue() throws IOException, InterruptedException {
+    public IntWritable getCurrentValue() throws IOException {
         return value;
     }
  
     @Override
-    public float getProgress() throws IOException, InterruptedException {
+    public float getProgress() throws IOException{
         if (start == end) {
             return 0.0f;
         }
@@ -53,7 +68,7 @@ public class GraphRecordReader extends RecordReader<IntWritable, IntWritable> {
         }
         in = new LineReader(filein, conf);
         if (skipFirstLine) {
-            start += in.readLine(new Text(),0,(int)Math.min((long)Integer.MAX_VALUE, end - start));
+            start += in.readLine(new Text(), 0, (int)Math.min((long)Integer.MAX_VALUE, end - start));
         }
         this.pos = start;
     }
@@ -68,16 +83,16 @@ public class GraphRecordReader extends RecordReader<IntWritable, IntWritable> {
 		}
 		Text edge = new Text();
 		int newSize = 0;
-        newSize = in.readLine(edge, Integer.MAX_VALUE, end - pos);
+        newSize = in.readLine(edge, Integer.MAX_VALUE, (int)Math.min((long)Integer.MAX_VALUE, end - pos));
 
         if (newSize == 0) {
             key = null;
             value = null;
             return false;
         } else {
-        	String edgeArray = edge.toString().split(' ');
-        	key.set(edgeArray[0]);
-        	value.set(edgeArray[1]);
+        	String[] edgeArray = edge.toString().split(" ");
+        	key.set(Integer.parseInt(edgeArray[0]));
+        	value.set(Integer.parseInt(edgeArray[1]));
         	pos += newSize;
             return true;
         }
