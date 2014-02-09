@@ -43,7 +43,7 @@ public class DensityJob {
 
             FloatWritable density = new FloatWritable(0);
             if (edges.size() > 0) {
-                density.set((((float) Collections.max(nodes)) / edges.size()));
+                density.set((((float) edges.size()) / Collections.max(nodes)));
             }
             for (Text edg : edges) {
                 context.write(density, edg);    
