@@ -52,8 +52,7 @@ public class DensityJob {
     }
 
     public static Job createJob() throws IOException {
-        Configuration conf = new Configuration();
-    	Job job = new Job(conf, "DensityJob");
+        Job job = Job.getInstance();
 
         job.setMapOutputKeyClass(IntWritable.class);
         job.setMapOutputValueClass(Text.class);
