@@ -27,7 +27,7 @@ public class DensityJob {
         }
     }
 
-    public static class GraphDensityReducer extends Reducer<IntWritable, Text, FloatWritable, ArrayList<Text>> {
+    public static class GraphDensityReducer extends Reducer<IntWritable, Text, FloatWritable, Text> {
         public void reduce(IntWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             Text edge;
             ArrayList<Text> edges = new ArrayList<Text>();
@@ -45,7 +45,9 @@ public class DensityJob {
             if (edges.size() > 0) {
                 density.set((((float) Collections.max(nodes)) / edges.size()));
             }
-            context.write(density, edges);
+            for (Text edg : edges) {
+                context.write(density, edg);    
+            }
       }
     }
 
@@ -56,7 +58,7 @@ public class DensityJob {
         job.setMapOutputKeyClass(IntWritable.class);
         job.setMapOutputValueClass(Text.class);
         job.setOutputKeyClass(FloatWritable.class);
-        job.setOutputValueClass(ArrayList.class);
+        job.setOutputValueClass(Text.class);
 
         job.setMapperClass(GraphDensityMapper.class);
         job.setReducerClass(GraphDensityReducer.class);
