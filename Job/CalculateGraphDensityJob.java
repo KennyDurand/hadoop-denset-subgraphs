@@ -37,8 +37,14 @@ public class CalculateGraphDensityJob {
             	edge = new Text(val.toString());
                 edges.add(edge);
                 String[] nodeArray = edge.toString().split(";");
-                nodes.add(Integer.parseInt(nodeArray[0]));
-                nodes.add(Integer.parseInt(nodeArray[1]));
+                int node0 = Integer.parseInt(nodeArray[0]);
+                int node1 = Integer.parseInt(nodeArray[1]);
+                if (!nodes.contains(node0)) {
+                    nodes.add(node1);
+                }
+                if (!nodes.contains(node0)) {
+                    nodes.add(node1);
+                }
             }
 
             FloatWritable density = new FloatWritable(0);
