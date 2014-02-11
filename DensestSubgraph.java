@@ -11,35 +11,36 @@ import org.apache.hadoop.mapreduce.Job;
 
 public class DensestSubgraph {
 
-  public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
-    Job densityJob = CalculateGraphDensityJob.createJob();
+    public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
+        Job densityJob = CalculateGraphDensityJob.createJob();
 
-    FileInputFormat.setInputPaths(densityJob, new Path(args[0]));
-    FileOutputFormat.setOutputPath(densityJob, new Path(args[1] + "/density"));
+        FileInputFormat.setInputPaths(densityJob, new Path(args[0]));
+        FileOutputFormat.setOutputPath(densityJob, new Path(args[1] + "/density"));
 
-    densityJob.waitForCompletion(true);
+        densityJob.waitForCompletion(true);
 
-    Job degreeJob = CalculateNodeDegreeJob.createJob();
+        Job degreeJob = CalculateNodeDegreeJob.createJob();
 
-    FileInputFormat.setInputPaths(degreeJob, new Path(args[1] + "/density"));
-    FileOutputFormat.setOutputPath(degreeJob, new Path(args[1] + "/degree"));
+        FileInputFormat.setInputPaths(degreeJob, new Path(args[1] + "/density"));
+        FileOutputFormat.setOutputPath(degreeJob, new Path(args[1] + "/degree"));
 
-    degreeJob.waitForCompletion(true);
+        degreeJob.waitForCompletion(true);
 
-    Job originNodeJob = DeleteOriginNodeJob.createJob();
+        Job originNodeJob = DeleteOriginNodeJob.createJob();
 
-    FileInputFormat.addInputPath(originNodeJob, new Path(args[0]));
-    FileInputFormat.addInputPath(originNodeJob, new Path(args[1] + "/degree"));
-    FileOutputFormat.setOutputPath(originNodeJob, new Path(args[1] + "/origin"));
+        FileInputFormat.addInputPath(originNodeJob, new Path(args[0]));
+        FileInputFormat.addInputPath(originNodeJob, new Path(args[1] + "/degree"));
+        FileOutputFormat.setOutputPath(originNodeJob, new Path(args[1] + "/origin"));
 
-    originNodeJob.waitForCompletion(true);
+        originNodeJob.waitForCompletion(true);
 
-    Job extremityNodeJob = DeleteExtremityNodeJob.createJob();
+        Job extremityNodeJob = DeleteExtremityNodeJob.createJob();
 
-    FileInputFormat.addInputPath(extremityNodeJob, new Path(args[1] + "/origin"));
-    FileInputFormat.addInputPath(extremityNodeJob, new Path(args[1] + "/degree"));
-    FileOutputFormat.setOutputPath(extremityNodeJob, new Path(args[1] + "/extremity"));
+        FileInputFormat.addInputPath(extremityNodeJob, new Path(args[1] + "/origin"));
+        FileInputFormat.addInputPath(extremityNodeJob, new Path(args[1] + "/degree"));
+        FileOutputFormat.setOutputPath(extremityNodeJob, new Path(args[1] + "/extremity"));
 
-    extremityNodeJob.waitForCompletion(true);
-  }
+        extremityNodeJob.setNumReduceTasks(3);
+        extremityNodeJob.waitForCompletion(true);
+    }
 }
