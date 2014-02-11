@@ -40,7 +40,7 @@ public class DegreeJob {
 
             FloatWritable ratio = new FloatWritable(0);
             if (DegreeJob.DENSITY > 0) {
-                ratio.set((float) (degree / (DegreeJob.DENSITY * 2.02)));
+                ratio.set((float) (degree / DegreeJob.DENSITY));
             }
             context.write(key, ratio);
       }
