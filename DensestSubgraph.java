@@ -25,5 +25,13 @@ public class DensestSubgraph {
     FileOutputFormat.setOutputPath(degreeJob, new Path(args[1] + "/degree"));
 
     degreeJob.waitForCompletion(true);
+
+    Job originNodeJob = DeleteOriginNodeJob.createJob();
+
+    FileInputFormat.addInputPath(originNodeJob, new Path(args[0]));
+    FileInputFormat.addInputPath(originNodeJob, new Path(args[1] + "/degree"));
+    FileOutputFormat.setOutputPath(originNodeJob, new Path(args[1] + "/origin"));
+
+    originNodeJob.waitForCompletion(true);
   }
 }
