@@ -17,10 +17,10 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
-public class DeleteOriginNodeJob {
+public class DeleteExtremityNodeJob {
     private final static double RATIO = 2.02;
     
-    public static class DeleteOriginNodeMapper extends Mapper<Text, Text, Text, Text> {
+    public static class DeleteExtremityNodeMapper extends Mapper<Text, Text, Text, Text> {
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
             FileSplit split = (FileSplit) context.getInputSplit();
             if (split.getPath().toString().contains("/degree/")) {
@@ -29,12 +29,12 @@ public class DeleteOriginNodeJob {
                 }
             } else {
                 String[] edge = value.toString().split(";");
-                context.write(key, value);
+                context.write(value, key);
             }
         }
     }
 
-    public static class DeleteOriginNodeReducer extends Reducer<Text, Text, Text, Text> {
+    public static class DeleteExtremityNodeReducer extends Reducer<Text, Text, Text, Text> {
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             ArrayList<Text> nodeList = new ArrayList<Text>();
 
@@ -61,8 +61,8 @@ public class DeleteOriginNodeJob {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
-        job.setMapperClass(DeleteOriginNodeMapper.class);
-        job.setReducerClass(DeleteOriginNodeReducer.class);
+        job.setMapperClass(DeleteExtremityNodeMapper.class);
+        job.setReducerClass(DeleteExtremityNodeReducer.class);
 
         job.setInputFormatClass(CustomInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);
