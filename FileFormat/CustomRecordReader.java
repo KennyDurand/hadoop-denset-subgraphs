@@ -14,7 +14,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.util.LineReader;
 
-public class GraphRecordReader extends RecordReader<Text, Text> {
+public class CustomRecordReader extends RecordReader<Text, Text> {
     private LineReader in;
     private Text key;
     private Text value;

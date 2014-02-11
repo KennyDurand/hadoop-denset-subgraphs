@@ -15,12 +15,12 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
-public class DegreeJob {
+public class CalculateNodeDegreeJob {
     public static float DENSITY = 0;
 
-    public static class NodeDegreeMapper extends Mapper<Text, Text, IntWritable, IntWritable> {
+    public static class CalculateNodeDegreeMapper extends Mapper<Text, Text, IntWritable, IntWritable> {
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
-            DegreeJob.DENSITY = Float.parseFloat(key.toString());
+            CalculateNodeDegreeJob.DENSITY = Float.parseFloat(key.toString());
             String[] edge = value.toString().split(";");
 
             IntWritable node0 = new IntWritable(Integer.parseInt(edge[0]));
@@ -30,7 +30,7 @@ public class DegreeJob {
         }
     }
 
-    public static class NodeDegreeReducer extends Reducer<IntWritable, IntWritable, IntWritable, FloatWritable> {
+    public static class CalculateNodeDegreeReducer extends Reducer<IntWritable, IntWritable, IntWritable, FloatWritable> {
         public void reduce(IntWritable key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
             int degree = 0;
 
@@ -39,8 +39,8 @@ public class DegreeJob {
             }
 
             FloatWritable ratio = new FloatWritable(0);
-            if (DegreeJob.DENSITY > 0) {
-                ratio.set((float) (degree / DegreeJob.DENSITY));
+            if (CalculateNodeDegreeJob.DENSITY > 0) {
+                ratio.set((float) (degree / CalculateNodeDegreeJob.DENSITY));
             }
             context.write(key, ratio);
       }
@@ -54,10 +54,10 @@ public class DegreeJob {
         job.setOutputKeyClass(IntWritable.class);
         job.setOutputValueClass(FloatWritable.class);
 
-        job.setMapperClass(NodeDegreeMapper.class);
-        job.setReducerClass(NodeDegreeReducer.class);
+        job.setMapperClass(CalculateNodeDegreeMapper.class);
+        job.setReducerClass(CalculateNodeDegreeReducer.class);
 
-        job.setInputFormatClass(GraphInputFormat.class);
+        job.setInputFormatClass(CustomInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);
 
         return job;

@@ -16,8 +16,8 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
-public class DensityJob {
-    public static class GraphDensityMapper extends Mapper<Text, Text, IntWritable, Text> {
+public class CalculateGraphDensityJob {
+    public static class CalculateGraphDensityMapper extends Mapper<Text, Text, IntWritable, Text> {
         private final static IntWritable one = new IntWritable(1);
 
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
@@ -27,7 +27,7 @@ public class DensityJob {
         }
     }
 
-    public static class GraphDensityReducer extends Reducer<IntWritable, Text, FloatWritable, Text> {
+    public static class CalculateGraphDensityReducer extends Reducer<IntWritable, Text, FloatWritable, Text> {
         public void reduce(IntWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             Text edge;
             ArrayList<Text> edges = new ArrayList<Text>();
@@ -59,10 +59,10 @@ public class DensityJob {
         job.setOutputKeyClass(FloatWritable.class);
         job.setOutputValueClass(Text.class);
 
-        job.setMapperClass(GraphDensityMapper.class);
-        job.setReducerClass(GraphDensityReducer.class);
+        job.setMapperClass(CalculateGraphDensityMapper.class);
+        job.setReducerClass(CalculateGraphDensityReducer.class);
 
-        job.setInputFormatClass(GraphInputFormat.class);
+        job.setInputFormatClass(CustomInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);
 
         return job;

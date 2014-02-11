@@ -12,14 +12,14 @@ import org.apache.hadoop.mapreduce.Job;
 public class DensestSubgraph {
 
   public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
-    Job densityJob = DensityJob.createJob();
+    Job densityJob = CalculateGraphDensityJob.createJob();
 
     FileInputFormat.setInputPaths(densityJob, new Path(args[0]));
     FileOutputFormat.setOutputPath(densityJob, new Path(args[1] + "/density"));
 
     densityJob.waitForCompletion(true);
 
-    Job degreeJob = DegreeJob.createJob();
+    Job degreeJob = CalculateNodeDegreeJob.createJob();
 
     FileInputFormat.setInputPaths(degreeJob, new Path(args[1] + "/density"));
     FileOutputFormat.setOutputPath(degreeJob, new Path(args[1] + "/degree"));
