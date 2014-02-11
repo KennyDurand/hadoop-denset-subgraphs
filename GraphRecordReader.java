@@ -75,13 +75,13 @@ public class GraphRecordReader extends RecordReader<Text, Text> {
     @Override
     public boolean nextKeyValue() throws IOException, InterruptedException {
         if (key == null) {
-	        key = new Text();
+            key = new Text();
         }
-		if (value == null) {
-        	value = new Text();
-		}
-		Text edge = new Text();
-		int newSize = 0;
+        if (value == null) {
+            value = new Text();
+        }
+        Text edge = new Text();
+        int newSize = 0;
         newSize = in.readLine(edge, Integer.MAX_VALUE, (int)Math.min((long)Integer.MAX_VALUE, end - pos));
 
         if (newSize == 0) {
