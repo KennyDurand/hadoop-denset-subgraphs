@@ -18,9 +18,9 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 public class DegreeJob {
     public static float DENSITY = 0;
 
-    public static class NodeDegreeMapper extends Mapper<FloatWritable, Text, IntWritable, IntWritable> {
-        public void map(FloatWritable key, Text value, Context context) throws IOException, InterruptedException {
-            DegreeJob.DENSITY = key.get();
+    public static class NodeDegreeMapper extends Mapper<Text, Text, IntWritable, IntWritable> {
+        public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
+            DegreeJob.DENSITY = Float.parseFloat(key.toString());
             String[] edge = value.toString().split(";");
 
             IntWritable node0 = new IntWritable(Integer.parseInt(edge[0]));
@@ -57,7 +57,7 @@ public class DegreeJob {
         job.setMapperClass(NodeDegreeMapper.class);
         job.setReducerClass(NodeDegreeReducer.class);
 
-        job.setInputFormatClass(DensityInputFormat.class);
+        job.setInputFormatClass(GraphInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);
 
         return job;

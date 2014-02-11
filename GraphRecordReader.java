@@ -8,17 +8,16 @@ import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.util.LineReader;
 
-public class GraphRecordReader extends RecordReader<IntWritable, IntWritable> {
+public class GraphRecordReader extends RecordReader<Text, Text> {
     private LineReader in;
-    private IntWritable key;
-    private IntWritable value;
+    private Text key;
+    private Text value;
     private long start = 0;
     private long end = 0;
     private long pos = 0;
@@ -31,12 +30,12 @@ public class GraphRecordReader extends RecordReader<IntWritable, IntWritable> {
     }
  
     @Override
-    public IntWritable getCurrentKey() throws IOException {
+    public Text getCurrentKey() throws IOException {
         return key;
     }
  
     @Override
-    public IntWritable getCurrentValue() throws IOException {
+    public Text getCurrentValue() throws IOException {
         return value;
     }
  
@@ -76,10 +75,10 @@ public class GraphRecordReader extends RecordReader<IntWritable, IntWritable> {
     @Override
     public boolean nextKeyValue() throws IOException, InterruptedException {
         if (key == null) {
-	        key = new IntWritable();
+	        key = new Text();
         }
 		if (value == null) {
-        	value = new IntWritable();
+        	value = new Text();
 		}
 		Text edge = new Text();
 		int newSize = 0;
@@ -90,10 +89,13 @@ public class GraphRecordReader extends RecordReader<IntWritable, IntWritable> {
             value = null;
             return false;
         } else {
-        	String[] edgeArray = edge.toString().split(" ");
-        	key.set(Integer.parseInt(edgeArray[0]));
-        	value.set(Integer.parseInt(edgeArray[1]));
-        	pos += newSize;
+            String[] dataArray = edge.toString().split("\t");
+            if (dataArray.length < 2) {
+                dataArray = edge.toString().split(" ");
+            }
+            key.set(dataArray[0]);
+            value.set(dataArray[1]);
+            pos += newSize;
             return true;
         }
     }
