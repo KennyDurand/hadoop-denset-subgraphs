@@ -16,25 +16,25 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 public class CalculateNodeDegreeJob {
-    public static float DENSITY = 0;
+    public static float DENSITY;
 
-    public static class CalculateNodeDegreeMapper extends Mapper<Text, Text, IntWritable, IntWritable> {
+    public static class CalculateNodeDegreeMapper extends Mapper<Text, Text, Text, Text> {
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
             CalculateNodeDegreeJob.DENSITY = Float.parseFloat(key.toString());
             String[] edge = value.toString().split(";");
 
-            IntWritable node0 = new IntWritable(Integer.parseInt(edge[0]));
-            IntWritable node1 = new IntWritable(Integer.parseInt(edge[1]));
+            Text node0 = new Text(edge[0]);
+            Text node1 = new Text(edge[1]);
             context.write(node0, node1);
             context.write(node1, node0);
         }
     }
 
-    public static class CalculateNodeDegreeReducer extends Reducer<IntWritable, IntWritable, IntWritable, FloatWritable> {
-        public void reduce(IntWritable key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+    public static class CalculateNodeDegreeReducer extends Reducer<Text, Text, Text, FloatWritable> {
+        public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             int degree = 0;
 
-            for (IntWritable val : values) {
+            for (Text val : values) {
             	degree++;
             }
 
@@ -49,9 +49,9 @@ public class CalculateNodeDegreeJob {
     public static Job createJob() throws IOException {
     	Job job = Job.getInstance();
 
-        job.setMapOutputKeyClass(IntWritable.class);
-        job.setMapOutputValueClass(IntWritable.class);
-        job.setOutputKeyClass(IntWritable.class);
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(Text.class);
+        job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(FloatWritable.class);
 
         job.setMapperClass(CalculateNodeDegreeMapper.class);

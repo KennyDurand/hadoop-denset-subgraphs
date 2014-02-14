@@ -31,25 +31,25 @@ public class CalculateGraphDensityJob {
         public void reduce(IntWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             Text edge;
             ArrayList<Text> edges = new ArrayList<Text>();
-            ArrayList<Integer> nodes = new ArrayList<Integer>();
+            ArrayList<String> nodes = new ArrayList<String>();
 
             for (Text val : values) {
             	edge = new Text(val.toString());
                 edges.add(edge);
                 String[] nodeArray = edge.toString().split(";");
-                int node0 = Integer.parseInt(nodeArray[0]);
-                int node1 = Integer.parseInt(nodeArray[1]);
+                String node0 = nodeArray[0];
+                String node1 = nodeArray[1];
                 if (!nodes.contains(node0)) {
-                    nodes.add(node1);
+                    nodes.add(node0);
                 }
-                if (!nodes.contains(node0)) {
+                if (!nodes.contains(node1)) {
                     nodes.add(node1);
                 }
             }
 
             FloatWritable density = new FloatWritable(0);
             if (edges.size() > 0) {
-                density.set((((float) edges.size()) / Collections.max(nodes)));
+                density.set((((float) edges.size()) / nodes.size()));
             }
             for (Text edg : edges) {
                 context.write(density, edg);    
